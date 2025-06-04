@@ -1,5 +1,6 @@
 ﻿using SwimmingAcademy.API.DTOs;
 using SwimmingAcademy.API.Models;
+using System.Threading.Tasks;
 
 namespace SwimmingAcademy.API.Interfaces
 {
@@ -18,5 +19,7 @@ namespace SwimmingAcademy.API.Interfaces
         Task AddSwimmerWithParentAsync(SwimmerCreateDto dto);
         Task<List<SwimmerLogTabDto>> GetSwimmerLogTabAsync(long swimmerId);
         Task<bool> UpdateSwimmerInfoAsync(long swimmerId, SwimmerUpdateDto dto, int updatedBy, short updatedAtSite);
+        Task<User?> GetUserByIdAsync(int id);
+        Task<AppCode?> GetSiteBySubIdAsync(short subId);
     }
 }

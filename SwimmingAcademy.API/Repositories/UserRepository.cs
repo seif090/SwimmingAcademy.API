@@ -146,14 +146,18 @@ namespace SwimmingAcademy.API.Repositories
             };
         }
 
-        public async Task<List<UserActionDto>> GetAllowedActionsForUserAsync(int userId)
+        
+
+        public async Task<List<UserActionDto>> GetAllowedActionsForUserOnSwimmerAsync(int userId, long swimmerId)
         {
-            // Get the user's UserTypeId
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Userid == userId);
+            // Get the user and their UserTypeId
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Userid == userId && !u.Disabled);
             if (user == null)
                 return new List<UserActionDto>();
 
             var userTypeId = user.UserTypeId;
+
+            // Optionally, you can add logic here to further filter actions based on swimmer context
 
             // Get allowed ActionIds from UsersPriv
             var actionIds = await _context.UsersPrivs

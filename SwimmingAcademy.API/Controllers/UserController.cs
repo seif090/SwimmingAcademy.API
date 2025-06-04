@@ -71,10 +71,12 @@ namespace SwimmingAcademy.API.Controllers
             return Ok(result);
         }
 
-        [HttpGet("allowed-actions/{userId}")]
-        public async Task<IActionResult> GetAllowedActionsForUser(int userId)
+        
+
+        [HttpGet("allowed-actions")]
+        public async Task<IActionResult> GetAllowedActionsForUserOnSwimmer([FromQuery] int userId, [FromQuery] long swimmerId)
         {
-            var actions = await _repo.GetAllowedActionsForUserAsync(userId);
+            var actions = await _repo.GetAllowedActionsForUserOnSwimmerAsync(userId, swimmerId);
             return Ok(actions);
         }
     }

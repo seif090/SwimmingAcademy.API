@@ -96,30 +96,38 @@ namespace SwimmingAcademy.API.Controllers
             return Ok(logs);
         }
 
-        [HttpPost("{id}/change-site")]
-        public async Task<IActionResult> ChangeSwimmerSite(int id)
+        [HttpPost("change-site")]
+        public async Task<IActionResult> ChangeSwimmerSite([FromQuery] int userId, [FromQuery] long swimmerId)
         {
-            // Get the user's site from claims (adjust claim type as needed)
-            var managerSiteClaim = User.FindFirst("Site");
-            if (managerSiteClaim == null)
-                return Forbid("Manager site information is missing.");
+            // Get the user from DB
+            var user = await _repo.GetUserByIdAsync(userId);
+            if (user == null)
+                return NotFound("User not found.");
 
-            short managerSite = short.Parse(managerSiteClaim.Value);
+            // Get the user's site from AppCodes table using SubId
+            var userSite = await _repo.GetSiteBySubIdAsync(user.Site);
+            if (userSite == null)
+                return NotFound("User's site not found.");
 
             // Get the swimmer from DB
-            var swimmer = await _repo.GetByIdAsync(id);
+            var swimmer = await _repo.GetByIdAsync((int)swimmerId);
             if (swimmer == null)
-                return NotFound();
+                return NotFound("Swimmer not found.");
+
+            // Get the swimmer's site from AppCodes table using SubId
+            var swimmerSite = await _repo.GetSiteBySubIdAsync(swimmer.Site);
+            if (swimmerSite == null)
+                return NotFound("Swimmer's site not found.");
 
             // Only allow if swimmer is in a different site
-            if (swimmer.Site == managerSite)
+            if (swimmer.Site == user.Site)
                 return BadRequest("Swimmer is already in your site.");
 
-            // Update swimmer's site
-            swimmer.Site = managerSite;
+            // Update swimmer's site to user's site (SubId)
+            swimmer.Site = user.Site;
             await _repo.UpdateAsync(swimmer);
 
-            return Ok("Swimmer site updated successfully.");
+            return Ok($"Swimmer site updated successfully to {userSite.Description}.");
         }
 
         [HttpPost("add")]

@@ -18,8 +18,11 @@ namespace SwimmingAcademy.API.Repositories
             await _context.Infos2.Include(s => s.Site).ToListAsync();
 
         public async Task<Info2?> GetByIdAsync(int id) =>
-            await _context.Infos2.Include(s => s.Site).FirstOrDefaultAsync(s => s.SwimmerId == id);
-
+            await _context.Infos2.Include(s => s.SiteNavigation.SubId).FirstOrDefaultAsync(s => s.SwimmerId == id);
+        public async Task<User?> GetUserByIdAsync(int id)
+        {
+            return await _context.Users.FindAsync(id);
+        }
         public async Task AddAsync(Info2 swimmer)
         {
             await _context.Infos2.AddAsync(swimmer);
@@ -205,6 +208,10 @@ namespace SwimmingAcademy.API.Repositories
 
             await _context.SaveChangesAsync();
             return true;
+        }
+        public async Task<AppCode?> GetSiteBySubIdAsync(short subId)
+        {
+            return await _context.AppCodes.FirstOrDefaultAsync(a => a.SubId == subId);
         }
     }
 }

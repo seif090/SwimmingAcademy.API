@@ -15,11 +15,7 @@ namespace SwimmingAcademy.API.Interfaces
         Task<User?> AuthenticateAsync(string userName, string password);
         Task<LoginResultDto?> LoginAsync(int UserId, string password);
         Task<UserLoginDetailDto?> LoginWithActionsAsync(int UserId,  string password);
-        Task<List<UserActionDto>> GetAllowedActionsForUserAsync(int userId)
-
-
-
-
+        Task<List<UserActionDto>> GetAllowedActionsForUserOnSwimmerAsync(int userId, long swimmerId);
     }
 }
 
