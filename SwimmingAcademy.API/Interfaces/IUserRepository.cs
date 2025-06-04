@@ -13,8 +13,9 @@ namespace SwimmingAcademy.API.Interfaces
         Task DeleteUserAsync(int id);
         Task<List<string>> GetBranchNamesForUserTypeAsync(short userTypeId);
         Task<User?> AuthenticateAsync(string userName, string password);
-        Task<LoginResultDto?> LoginAsync(string fullName, string password);
-        Task<UserLoginDetailDto?> LoginWithActionsAsync(string fullName, string password);
+        Task<LoginResultDto?> LoginAsync(int UserId, string password);
+        Task<UserLoginDetailDto?> LoginWithActionsAsync(int UserId,  string password);
+        Task<List<UserActionDto>> GetAllowedActionsForUserAsync(int userId)
 
 
 

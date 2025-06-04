@@ -83,12 +83,12 @@ namespace SwimmingAcademy.API.Repositories
             return branchNames;
         }
 
-        public async Task<LoginResultDto?> LoginAsync(string fullName, string password)
+        public async Task<LoginResultDto?> LoginAsync(int UserId, string password)
         {
             var user = await _context.Users
                 .Include(u => u.SiteNavigation)
                 .Include(u => u.UserType)
-                .FirstOrDefaultAsync(u => u.Fullname == fullName && !u.Disabled);
+                .FirstOrDefaultAsync(u => u.Userid == UserId && !u.Disabled);
 
             if (user == null)
                 return null;
@@ -104,12 +104,12 @@ namespace SwimmingAcademy.API.Repositories
                 UserTypeDescription = user.UserType?.Description ?? string.Empty
             };
         }
-        public async Task<UserLoginDetailDto?> LoginWithActionsAsync(string fullName, string password)
+        public async Task<UserLoginDetailDto?> LoginWithActionsAsync(int UserId, string password)
         {
             var user = await _context.Users
                 .Include(u => u.SiteNavigation)
                 .Include(u => u.UserType)
-                .FirstOrDefaultAsync(u => u.Fullname == fullName && !u.Disabled);
+                .FirstOrDefaultAsync(u => u.Userid == UserId && !u.Disabled);
 
             if (user == null)
                 return null;
@@ -144,6 +144,33 @@ namespace SwimmingAcademy.API.Repositories
                 UserTypeDescription = user.UserType?.Description ?? string.Empty,
                 Actions = actions
             };
+        }
+
+        public async Task<List<UserActionDto>> GetAllowedActionsForUserAsync(int userId)
+        {
+            // Get the user's UserTypeId
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Userid == userId);
+            if (user == null)
+                return new List<UserActionDto>();
+
+            var userTypeId = user.UserTypeId;
+
+            // Get allowed ActionIds from UsersPriv
+            var actionIds = await _context.UsersPrivs
+                .Where(up => up.UserTypeId == userTypeId)
+                .Select(up => up.ActionId)
+                .ToListAsync();
+
+            // Get action details
+            return await _context.Actions
+                .Where(a => actionIds.Contains(a.ActionId) && !a.Disabled)
+                .Select(a => new UserActionDto
+                {
+                    ActionId = a.ActionId,
+                    ActionName = a.ActionName,
+                    Module = a.Module
+                })
+                .ToListAsync();
         }
     }
 

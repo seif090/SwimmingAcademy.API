@@ -64,11 +64,18 @@ namespace SwimmingAcademy.API.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDto request)
         {
-            var result = await _repo.LoginWithActionsAsync(request.FullName, request.Password);
+            var result = await _repo.LoginWithActionsAsync(request.UserId, request.Password);
             if (result == null)
                 return Unauthorized("Invalid credentials.");
 
             return Ok(result);
+        }
+
+        [HttpGet("allowed-actions/{userId}")]
+        public async Task<IActionResult> GetAllowedActionsForUser(int userId)
+        {
+            var actions = await _repo.GetAllowedActionsForUserAsync(userId);
+            return Ok(actions);
         }
     }
 }
