@@ -155,5 +155,28 @@ namespace SwimmingAcademy.API.Controllers
 
             return Ok("Swimmer info updated successfully.");
         }
+
+        [HttpDelete("remove")]
+        public async Task<IActionResult> RemoveSwimmer([FromQuery] int userId, [FromQuery] long swimmerId)
+        {
+            // Get the user from DB
+            var user = await _repo.GetUserByIdAsync(userId);
+            if (user == null)
+                return NotFound("User not found.");
+
+            // Get the swimmer from DB
+            var swimmer = await _repo.GetByIdAsync((int)swimmerId);
+            if (swimmer == null)
+                return NotFound("Swimmer not found.");
+
+            // Only allow if swimmer is in the same site/branch as the user
+            if (swimmer.Site != user.Site)
+                return Forbid("You can only remove swimmers from your own branch.");
+
+            // Remove swimmer
+            await _repo.DeleteAsync((int)swimmerId);
+
+            return Ok("Swimmer removed successfully.");
+        }
     }
 }

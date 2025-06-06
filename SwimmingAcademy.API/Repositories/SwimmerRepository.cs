@@ -213,6 +213,28 @@ namespace SwimmingAcademy.API.Repositories
         {
             return await _context.AppCodes.FirstOrDefaultAsync(a => a.SubId == subId);
         }
+
+        public async Task<bool> RemoveSwimmerFromBranchAsync(int userId, long swimmerId)
+        {
+            // Get the user
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Userid == userId);
+            if (user == null)
+                return false;
+
+            // Get the swimmer
+            var swimmer = await _context.Infos2.FirstOrDefaultAsync(s => s.SwimmerId == swimmerId);
+            if (swimmer == null)
+                return false;
+
+            // Only allow if swimmer is in the same site/branch as the user
+            if (swimmer.Site != user.Site)
+                return false;
+
+            // Remove swimmer
+            _context.Infos2.Remove(swimmer);
+            await _context.SaveChangesAsync();
+            return true;
+        }
     }
 }
 

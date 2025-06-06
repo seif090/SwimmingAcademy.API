@@ -21,5 +21,6 @@ namespace SwimmingAcademy.API.Interfaces
         Task<bool> UpdateSwimmerInfoAsync(long swimmerId, SwimmerUpdateDto dto, int updatedBy, short updatedAtSite);
         Task<User?> GetUserByIdAsync(int id);
         Task<AppCode?> GetSiteBySubIdAsync(short subId);
+        Task<bool> RemoveSwimmerFromBranchAsync(int userId, long swimmerId);
     }
 }
